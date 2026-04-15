@@ -3,6 +3,7 @@ export type TodoPriority = "Low" | "Medium" | "High";
 
 export type TodoRecord = {
   _id: string;
+  userId: string;
   task: string;
   description: string;
   status: TodoStatus;

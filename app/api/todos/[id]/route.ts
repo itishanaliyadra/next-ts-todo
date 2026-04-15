@@ -7,6 +7,7 @@ import { updateTodoById } from "@/lib/controllers/todo/update.controller";
 import { jsonError, jsonSuccess, respondWithError } from "@/lib/utils/api";
 import { buildUpdateTodoInput } from "@/lib/utils/todo";
 import { readJsonBody } from "@/lib/utils/request";
+import { requireAuthenticatedUser } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -23,7 +24,8 @@ export const GET = async (_request: NextRequest, context: Context) => {
     }
 
     await connectDB();
-    const todo = await getTodoById(id);
+    const user = await requireAuthenticatedUser(_request);
+    const todo = await getTodoById(id, user._id);
 
     if (!todo) {
       return jsonError("Todo not found", 404);
@@ -44,6 +46,7 @@ export const PATCH = async (request: NextRequest, context: Context) => {
     }
 
     await connectDB();
+    const user = await requireAuthenticatedUser(request);
     const body = await readJsonBody(request);
     const input = buildUpdateTodoInput(body);
 
@@ -51,7 +54,7 @@ export const PATCH = async (request: NextRequest, context: Context) => {
       return jsonError("Provide a valid task or status to update.", 400);
     }
 
-    const todo = await updateTodoById(id, input);
+    const todo = await updateTodoById(id, user._id, input);
 
     if (!todo) {
       return jsonError("Todo not found", 404);
@@ -72,7 +75,8 @@ export const DELETE = async (_request: NextRequest, context: Context) => {
     }
 
     await connectDB();
-    const todo = await deleteTodoById(id);
+    const user = await requireAuthenticatedUser(_request);
+    const todo = await deleteTodoById(id, user._id);
 
     if (!todo) {
       return jsonError("Todo not found", 404);

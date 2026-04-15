@@ -7,6 +7,8 @@ type TodoListProps = {
   todos: TodoRecord[];
   loading: boolean;
   busyTodoId: string | null;
+  emptyTitle?: string;
+  emptyDescription?: string;
   onEdit: (todo: TodoRecord) => void;
   onToggle: (todo: TodoRecord) => void;
   onDelete: (todo: TodoRecord) => void;
@@ -16,6 +18,8 @@ export default function TodoList({
   todos,
   loading,
   busyTodoId,
+  emptyTitle,
+  emptyDescription,
   onEdit,
   onToggle,
   onDelete,
@@ -25,7 +29,7 @@ export default function TodoList({
   }
 
   if (todos.length === 0) {
-    return <TodoEmptyState />;
+    return <TodoEmptyState title={emptyTitle} description={emptyDescription} />;
   }
 
   return (

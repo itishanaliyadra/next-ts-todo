@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { HttpError } from "@/lib/errors/http-error";
 
 type SuccessPayload<T> = {
   success: true;
@@ -19,7 +20,15 @@ export const jsonError = (message: string, status = 500) => {
 };
 
 export const getStatusCode = (error: unknown) => {
+  if (error instanceof HttpError) {
+    return error.statusCode;
+  }
+
   if (error instanceof Error) {
+    if (error.name === "AuthError") {
+      return 401;
+    }
+
     if (error.name === "ValidationError") {
       return 400;
     }
@@ -36,4 +45,3 @@ export const respondWithError = (error: unknown, fallbackMessage = "Internal ser
   const message = error instanceof Error && error.message ? error.message : fallbackMessage;
   return jsonError(message, getStatusCode(error));
 };
-

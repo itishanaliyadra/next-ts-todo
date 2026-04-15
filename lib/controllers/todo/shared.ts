@@ -4,6 +4,10 @@ import type { TodoPriority, TodoRecord } from "@/lib/types/todo";
 export type ListTodosOptions = {
   skip?: number;
   limit?: number;
+  userId: string;
+  search?: string;
+  status?: "Pending" | "Completed";
+  priority?: "Low" | "Medium" | "High";
 };
 
 export type TodoLikeRecord = Record<string, unknown> & {
@@ -60,6 +64,33 @@ export const buildTodoDefaultsPatch = (todo: TodoLikeRecord) => {
   return patch;
 };
 
+export const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+export const buildTodoQuery = (options: ListTodosOptions) => {
+  const query: Record<string, unknown> = {
+    isDeleted: false,
+    userId: options.userId,
+  };
+
+  if (options.search) {
+    const escapedSearch = escapeRegex(options.search.trim());
+    query.$or = [
+      { task: { $regex: escapedSearch, $options: "i" } },
+      { description: { $regex: escapedSearch, $options: "i" } },
+    ];
+  }
+
+  if (options.status) {
+    query.status = options.status;
+  }
+
+  if (options.priority) {
+    query.priority = options.priority;
+  }
+
+  return query;
+};
+
 export const backfillTodoDefaults = async (todo: TodoLikeRecord) => {
   const patch = buildTodoDefaultsPatch(todo);
 
@@ -76,6 +107,7 @@ export const normalizeTodo = (todo: Record<string, unknown>): TodoRecord => {
 
   return {
     _id: String(todo._id),
+    userId: typeof todo.userId === "string" ? todo.userId : String(todo.userId ?? ""),
     task: typeof todo.task === "string" ? todo.task : "",
     description: typeof todo.description === "string" ? todo.description : "",
     status: todo.status === "Completed" ? "Completed" : "Pending",

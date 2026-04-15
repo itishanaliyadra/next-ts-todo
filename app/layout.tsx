@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Todo Atlas",
-  description: "A polished Next.js todo app powered by MongoDB and Mongoose.",
+  description: "A protected todo app with JWT authentication and cookie-based sessions.",
 };
 
 export default function RootLayout({

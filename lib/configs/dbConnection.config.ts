@@ -22,8 +22,6 @@ const cache: MongooseCache = globalWithCache.mongooseCache ?? {
 globalWithCache.mongooseCache = cache;
 
 export const connectDB = async () => {
-  console.log("MONGO_URI----------", MONGO_URI);
-
   if (!MONGO_URI) {
     throw new Error("MONGO_URI is not defined");
   }

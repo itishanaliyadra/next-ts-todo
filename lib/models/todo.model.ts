@@ -8,6 +8,12 @@ const todoSchema = new Schema(
       trim: true,
       minlength: 1,
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+      index: true,
+    },
     description: {
       type: String,
       default: "",
@@ -45,6 +51,7 @@ const todoSchema = new Schema(
 
 export type TodoDocument = {
   task: string;
+  userId: string;
   description: string;
   status: "Pending" | "Completed";
   priority: "Low" | "Medium" | "High";

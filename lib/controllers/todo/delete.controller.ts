@@ -1,9 +1,9 @@
 import { TodoModel } from "@/lib/models/todo.model";
 import { backfillTodoDefaults, normalizeTodo } from "./shared";
 
-export const deleteTodoById = async (id: string) => {
+export const deleteTodoById = async (id: string, userId: string) => {
   const todo = await TodoModel.findOneAndUpdate(
-    { _id: id, isDeleted: false },
+    { _id: id, userId, isDeleted: false },
     {
       $set: {
         isDeleted: true,
